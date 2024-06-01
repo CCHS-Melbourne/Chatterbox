@@ -14,7 +14,7 @@ dotenv.load_dotenv()
 os.environ['SDL_AUDIODRIVER'] = 'pulse'
 
 OpenAI_api_key=os.getenv('API_KEY')
-assistant_id=os.getenv('LUNAR_ASSISTANT_ID')
+assistant_id=os.getenv('ASSISTANT_ID')
 print(assistant_id)
 
 client = OpenAI(
