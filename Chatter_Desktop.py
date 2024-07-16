@@ -168,5 +168,5 @@ def main():
             message_to_thread = message_thread(thread, transcription)
             response = run_thread(thread)
             speak(response)
-
-main()                                  
+if __name__ == "main":
+    main()                                  
