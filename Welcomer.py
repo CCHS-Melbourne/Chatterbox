@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from chatter3 import *
+from Chatter_for_PI_Zero_2W import *
 import json
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -15,17 +15,18 @@ class Message:
     
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    global greeting_now
-    print(greeting_now)
-    if not greeting_now:
-        greeting_now=True
-        resp=json.loads(msg.payload.decode())
-        thread = create_thread(Message(f"{resp['username']} has just scanned their access card to enter the hackerspace, please welcome them."))
+    global last_time
+    resp=json.loads(msg.payload.decode())
+    print(resp)
+    if resp['time']>last_time+20:
+        thread = create_thread(Message(f"{resp['username']} has just scanned their access card to enter the Connected Community Hackerspace, please welcome them."))
         response = run_thread(thread)
         speak(response)
-        greeting_now=False
+        last_time=resp['time']
+        
 
-greeting_now=False
+
+last_time=0
     
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_connect = on_connect
