@@ -136,18 +136,20 @@ def add_effects(filename):
     return effected_filename
 
 def speak(response):
-    speech=client.audio.speech.create(
-        model="tts-1",
-        voice="fable",
-        input=response
-    )
     filename="moonvoice.mp3"
     print("\n")
     print(filename)
-    speech.stream_to_file(filename)
-    effected_filename=add_effects(filename)
-    print(effected_filename)
-    pygame.mixer.music.load(effected_filename)
+    with client.audio.speech.with_streaming_response.create(
+        model="tts-1",
+        voice="fable",
+        input=response
+    ) as response:
+        response.stream_to_file(filename)
+        
+#    effected_filename=add_effects(filename)
+#    print(effected_filename)
+#    pygame.mixer.music.load(effected_filename)
+    pygame.mixer.music.load(filename)
     pygame.mixer.music.set_volume(0.9)
     pygame.mixer.music.play()
     print("Playing speech")
@@ -176,6 +178,6 @@ def main():
             message_to_thread=message_thread(thread,transcription)
             response=run_thread(thread)
             speak(response)
-
-main()
+if __name__ == "main":
+    main()
 
