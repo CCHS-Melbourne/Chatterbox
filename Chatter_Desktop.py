@@ -136,9 +136,9 @@ def speak(response):
         model="tts-1",
         voice="fable",
         input=response
-    ) as response:    
+    ) as response:
         response.stream_to_file(filename)
-    
+
 #     effected_filename = add_effects(filename)
 #     print(effected_filename)
 #     pygame.mixer.music.load(effected_filename)
@@ -168,5 +168,5 @@ def main():
             message_to_thread = message_thread(thread, transcription)
             response = run_thread(thread)
             speak(response)
-if __name__ == "main":
-    main()                                  
+if __name__ == "__main__":
+    main()
