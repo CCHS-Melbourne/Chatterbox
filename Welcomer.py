@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 from Chatter_for_PI_Zero_2W import *
 import json
 
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, reason_code, properties):
     print(f"Connected with result code {reason_code}")
@@ -9,25 +10,30 @@ def on_connect(client, userdata, flags, reason_code, properties):
     # reconnect then subscriptions will be renewed.
     client.subscribe("lunar_gate")
 
+
 class Message:
-    def __init__(self,text):
-        self.text=text
-    
+    def __init__(self, text):
+        self.text = text
+
+
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     global last_time
-    resp=json.loads(msg.payload.decode())
+    resp = json.loads(msg.payload.decode())
     print(resp)
-    if resp['time']>last_time+20:
-        thread = create_thread(Message(f"{resp['username']} has just scanned their access card to enter the Connected Community Hackerspace, please welcome them."))
+    if resp["time"] > last_time + 20:
+        thread = create_thread(
+            Message(
+                f"{resp['username']} has just scanned their access card to enter the Connected Community Hackerspace, please welcome them."
+            )
+        )
         response = run_thread(thread)
         speak(response)
-        last_time=resp['time']
-        
+        last_time = resp["time"]
 
 
-last_time=0
-    
+last_time = 0
+
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
