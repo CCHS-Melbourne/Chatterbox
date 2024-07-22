@@ -14,5 +14,5 @@ def main():
     run(is_pressed, wait_for_press)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()

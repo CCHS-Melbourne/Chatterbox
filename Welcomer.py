@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from Chatter_for_PI_Zero_2W import *
+from shared import *
 import json
 
 
@@ -39,8 +39,6 @@ mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 
 mqttc.connect("192.168.0.6", 1883, 60)
-
-pygame.mixer.init()
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
