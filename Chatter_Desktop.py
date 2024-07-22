@@ -129,27 +129,23 @@ def add_effects(filename):
     return effected_filename
 
 def speak(response):
-    filename = "moonvoice.mp3"
-    print("\n")
-    print(filename)
+    import pyaudio
+
+    player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
+
+    start_time = time.time()
+
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
         voice="fable",
+        response_format="pcm",  # similar to WAV, but without a header chunk at the start.
         input=response
     ) as response:
-        response.stream_to_file(filename)
+        print(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
+        for chunk in response.iter_bytes(chunk_size=1024):
+            player_stream.write(chunk)
 
-#     effected_filename = add_effects(filename)
-#     print(effected_filename)
-#     pygame.mixer.music.load(effected_filename)
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.set_volume(0.9)
-    pygame.mixer.music.play()
-    print("Playing speech")
-    while pygame.mixer.music.get_busy():
-        time.sleep(1)
-    print("Finished talking.")
-    pygame.mixer.music.stop()
+    print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
 
 def main():
     topic_running = True
