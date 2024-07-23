@@ -11,6 +11,7 @@ dotenv.load_dotenv()
 
 OpenAI_api_key = os.getenv("API_KEY")
 assistant_id = os.getenv("ASSISTANT_ID")
+assistants={"Unhelpful Joker":"asst_K2kmAlLtH29ccFRMpSqJlhK7","Brian":"asst_oiyEv1qS4b1T5bKgDMHc3tog"}
 print(assistant_id)
 
 client = OpenAI(
@@ -78,6 +79,7 @@ def create_thread(transcription):
 
 
 def run_thread(thread):
+    global assistant_id
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
         assistant_id=assistant_id,
@@ -89,12 +91,32 @@ def run_thread(thread):
         print("\nResponse: ", response)
         return response
     elif run.status == "requires_action":
+        rtn=None
+        tool_outputs=[]
         for tool in run.required_action.submit_tool_outputs.tool_calls:
             if tool.function.name == "switch_personality":
                 args = json.loads(tool.function.arguments)
                 print("Sign off with", args["sign_off"])
                 print("Switch to", args["personality"])
-        return None
+                assistant_id=assistants[args["personality"]]
+                rtn=args["sign_off"]
+                tool_outputs.append({
+                      "tool_call_id": tool.id,
+                      "output": "Bye!"
+                    })
+        if tool_outputs:
+            try:
+                run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+                    thread_id=thread.id,
+                    run_id=run.id,
+                    tool_outputs=tool_outputs
+                )
+                print("Tool outputs submitted successfully.")
+            except Exception as e:
+                print("Failed to submit tool outputs:", e)
+        else:
+            print("No tool outputs to submit.")
+        return rtn
     else:
         print("Status:", run.status)
 
