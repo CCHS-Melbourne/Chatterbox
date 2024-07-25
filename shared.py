@@ -10,9 +10,10 @@ from openai import OpenAI
 dotenv.load_dotenv()
 
 OpenAI_api_key = os.getenv("API_KEY")
-assistant_id = os.getenv("ASSISTANT_ID")
+assistant="Unhelpful Joker"
 assistants={"Unhelpful Joker":"asst_K2kmAlLtH29ccFRMpSqJlhK7","Brian":"asst_oiyEv1qS4b1T5bKgDMHc3tog"}
-print(assistant_id)
+voices={"Unhelpful Joker":"fable","Brian":"onyx"}
+print(assistant)
 
 client = OpenAI(
     # This is the default and can be omitted
@@ -79,27 +80,29 @@ def create_thread(transcription):
 
 
 def run_thread(thread):
-    global assistant_id
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
-        assistant_id=assistant_id,
+        assistant_id=assistants[assistant],
         instructions="",  # Working system prompt thing
     )
+    cont=True
+    rtn=""
+    personality=assistant
     if run.status == "completed":
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         response = messages.data[0].content[0].text.value
         print("\nResponse: ", response)
-        return response
+        rtn = response
     elif run.status == "requires_action":
-        rtn=None
         tool_outputs=[]
         for tool in run.required_action.submit_tool_outputs.tool_calls:
             if tool.function.name == "switch_personality":
                 args = json.loads(tool.function.arguments)
                 print("Sign off with", args["sign_off"])
                 print("Switch to", args["personality"])
-                assistant_id=assistants[args["personality"]]
+                personality=args["personality"]
                 rtn=args["sign_off"]
+                cont=False
                 tool_outputs.append({
                       "tool_call_id": tool.id,
                       "output": "Bye!"
@@ -116,9 +119,9 @@ def run_thread(thread):
                 print("Failed to submit tool outputs:", e)
         else:
             print("No tool outputs to submit.")
-        return rtn
     else:
         print("Status:", run.status)
+    return rtn, cont, personality
 
 
 def message_thread(thread, transcription):
@@ -143,7 +146,7 @@ def speak(response):
 
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
-        voice="fable",
+        voice=voices[assistant],
         response_format="pcm",  # similar to WAV, but without a header chunk at the start.
         input=response,
     ) as response:
@@ -155,21 +158,20 @@ def speak(response):
 
 
 def run(is_pressed, wait_for_press):
+    global assistant
     # create flag to track the status of the user interaction
     topic_running = True
     same_thread = False
 
-    # start interaction with user press
-    transcription = transcribe_on_press(is_pressed, wait_for_press)
-
     while topic_running == True:
         if same_thread == False:
+            transcription = transcribe_on_press(is_pressed, wait_for_press)
             thread = create_thread(transcription)
-            response = run_thread(thread)
-            speak(response)
-            same_thread = True
         else:
             transcription = transcribe_on_press(is_pressed, wait_for_press)
             message_to_thread = message_thread(thread, transcription)
-            response = run_thread(thread)
-            speak(response)
+
+        response, same_thread, personality = run_thread(thread)
+        speak(response)
+        # has to be after, otherwise will speak sign-off in wrong voice
+        assistant=personality

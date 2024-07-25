@@ -27,7 +27,7 @@ def on_message(client, userdata, msg):
                 f"{resp['username']} has just scanned their access card to enter the Connected Community Hackerspace, please welcome them."
             )
         )
-        response = run_thread(thread)
+        response, cont, personality = run_thread(thread)
         speak(response)
         last_time = resp["time"]
 
