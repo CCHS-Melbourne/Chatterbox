@@ -11,8 +11,8 @@ dotenv.load_dotenv()
 
 OpenAI_api_key = os.getenv("API_KEY")
 assistant="Unhelpful Joker"
-assistants={"Unhelpful Joker":"asst_K2kmAlLtH29ccFRMpSqJlhK7","Brian":"asst_oiyEv1qS4b1T5bKgDMHc3tog"}
-voices={"Unhelpful Joker":"fable","Brian":"onyx"}
+assistants={"Unhelpful Joker":"asst_K2kmAlLtH29ccFRMpSqJlhK7","Brian":"asst_oiyEv1qS4b1T5bKgDMHc3tog","sauce-bot":"asst_yeHbJkwar6lGy6WpFmUPv7cd"}
+voices={"Unhelpful Joker":"fable","Brian":"onyx","Little Bessie":"shimmer","sauce-bot":"alloy"}
 print(assistant)
 
 client = OpenAI(
