@@ -10,9 +10,18 @@ from openai import OpenAI
 dotenv.load_dotenv()
 
 OpenAI_api_key = os.getenv("API_KEY")
-assistant="Unhelpful Joker"
-assistants={"Unhelpful Joker":"asst_K2kmAlLtH29ccFRMpSqJlhK7","Brian":"asst_oiyEv1qS4b1T5bKgDMHc3tog","sauce-bot":"asst_yeHbJkwar6lGy6WpFmUPv7cd"}
-voices={"Unhelpful Joker":"fable","Brian":"onyx","Little Bessie":"shimmer","sauce-bot":"alloy"}
+assistant = "Unhelpful Joker"
+assistants = {
+    "Unhelpful Joker": "asst_K2kmAlLtH29ccFRMpSqJlhK7",
+    "Brian": "asst_oiyEv1qS4b1T5bKgDMHc3tog",
+    "SauceBot": "asst_yeHbJkwar6lGy6WpFmUPv7cd",
+}
+voices = {
+    "Unhelpful Joker": "fable",
+    "Brian": "onyx",
+    "Little Bessie": "shimmer",
+    "SauceBot": "alloy",
+}
 print(assistant)
 
 client = OpenAI(
@@ -85,34 +94,29 @@ def run_thread(thread):
         assistant_id=assistants[assistant],
         instructions="",  # Working system prompt thing
     )
-    cont=True
-    rtn=""
-    personality=assistant
+    cont = True
+    rtn = ""
+    personality = assistant
     if run.status == "completed":
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         response = messages.data[0].content[0].text.value
         print("\nResponse: ", response)
         rtn = response
     elif run.status == "requires_action":
-        tool_outputs=[]
+        tool_outputs = []
         for tool in run.required_action.submit_tool_outputs.tool_calls:
             if tool.function.name == "switch_personality":
                 args = json.loads(tool.function.arguments)
                 print("Sign off with", args["sign_off"])
                 print("Switch to", args["personality"])
-                personality=args["personality"]
-                rtn=args["sign_off"]
-                cont=False
-                tool_outputs.append({
-                      "tool_call_id": tool.id,
-                      "output": "Bye!"
-                    })
+                personality = args["personality"]
+                rtn = args["sign_off"]
+                cont = False
+                tool_outputs.append({"tool_call_id": tool.id, "output": "Bye!"})
         if tool_outputs:
             try:
                 run = client.beta.threads.runs.submit_tool_outputs_and_poll(
-                    thread_id=thread.id,
-                    run_id=run.id,
-                    tool_outputs=tool_outputs
+                    thread_id=thread.id, run_id=run.id, tool_outputs=tool_outputs
                 )
                 print("Tool outputs submitted successfully.")
             except Exception as e:
@@ -174,4 +178,4 @@ def run(is_pressed, wait_for_press):
         response, same_thread, personality = run_thread(thread)
         speak(response)
         # has to be after, otherwise will speak sign-off in wrong voice
-        assistant=personality
+        assistant = personality
