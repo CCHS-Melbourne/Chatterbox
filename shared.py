@@ -168,11 +168,14 @@ def run(is_pressed, wait_for_press):
     same_thread = False
 
     while topic_running == True:
-        if same_thread == False:
+        try:
             transcription = transcribe_on_press(is_pressed, wait_for_press)
+        except ValueError:
+            print("Recording failed.")
+            continue
+        if same_thread == False:
             thread = create_thread(transcription)
         else:
-            transcription = transcribe_on_press(is_pressed, wait_for_press)
             message_to_thread = message_thread(thread, transcription)
 
         response, same_thread, personality = run_thread(thread)
