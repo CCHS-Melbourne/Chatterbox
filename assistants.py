@@ -30,7 +30,7 @@ assistants = {
     ),
     "Lunar Door Guardian": Assistant(
         id="asst_k16BHtnO8NgNS6oI6zsJ3yH1",
-        voice="fable",
+        voice="echo",
         desc="The loyal guardian of the garage door. A bit aloof, but interesting and in charge of an esp-rfid reader's documentation.",
     ),
 }
