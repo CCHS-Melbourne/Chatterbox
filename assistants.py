@@ -3,17 +3,26 @@ import os
 from openai import OpenAI
 from openai.types.beta import FunctionTool
 from openai.types import FunctionDefinition
+from collections import namedtuple
+
+Assistant = namedtuple("Assistant", ["id", "voice", "desc"])
 
 assistants = {
-    "Unhelpful Joker": "asst_K2kmAlLtH29ccFRMpSqJlhK7",
-    "Brian": "asst_oiyEv1qS4b1T5bKgDMHc3tog",
-    "SauceBot": "asst_yeHbJkwar6lGy6WpFmUPv7cd",
-}
-voices = {
-    "Unhelpful Joker": "fable",
-    "Brian": "onyx",
-    "Little Bessie": "shimmer",
-    "SauceBot": "alloy",
+    "Unhelpful Joker": Assistant(
+        id="asst_K2kmAlLtH29ccFRMpSqJlhK7",
+        voice="fable",
+        desc="Unhelpful Joker is an entertainer that doesn't give helpful advice.",
+    ),
+    "Brian": Assistant(
+        id="asst_oiyEv1qS4b1T5bKgDMHc3tog",
+        voice="onyx",
+        desc="Brian is laser cutter assistant who likes burning things.",
+    ),
+    "SauceBot": Assistant(
+        id="asst_yeHbJkwar6lGy6WpFmUPv7cd",
+        voice="alloy",
+        desc="Saucebot is a sauce dispensing machine for 'snags' (sausages) and is bunnings mascot of the space, who likes sauce based puns brightening people's days.",
+    ),
 }
 
 SWITCH_PERSONALITY = FunctionTool(
@@ -27,7 +36,10 @@ SWITCH_PERSONALITY = FunctionTool(
                 "personality": {
                     "type": "string",
                     "enum": assistants.keys(),
-                    "description": "The personality to change to. Pass the users choice. Their descriptions are as follows: - Unhelpful Joker is an entertainer that doesn't give helpful advice. - Brian is laser cutter assistant who likes burning things. - Saucebot is a sauce dispensing machine for 'snags' (sausages) and is bunnings mascot of the space, who likes sauce based puns brightening people's days.",
+                    "description": "The personality to change to."
+                    + "Pass the users choice."
+                    + "Their descriptions are as follows: "
+                    + " ".join("- " + x.desc for x in assistants.values()),
                 },
             },
             "required": ["sign_off", "personality"],
@@ -38,9 +50,9 @@ SWITCH_PERSONALITY = FunctionTool(
 
 
 def update_tools(client):
-    for assistant in assistants:
+    for assistant in assistants.values():
         updated_assistant = client.beta.assistants.update(
-            assistants[assistant], tools=[SWITCH_PERSONALITY], model="gpt-4o-mini"
+            assistant.id, tools=[SWITCH_PERSONALITY], model="gpt-4o-mini"
         )
 
 

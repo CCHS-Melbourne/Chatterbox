@@ -6,7 +6,7 @@ import sounddevice as sd
 from numpy import concatenate, float32
 from scipy.io.wavfile import write
 from openai import OpenAI
-from assistants import assistants, voices
+from assistants import assistants
 
 dotenv.load_dotenv()
 
@@ -78,7 +78,7 @@ def create_thread(transcription):
 def run_thread(thread):
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
-        assistant_id=assistants[assistant],
+        assistant_id=assistants[assistant].id,
         instructions="",  # Working system prompt thing
     )
     cont = True
@@ -137,7 +137,7 @@ def speak(response):
 
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
-        voice=voices[assistant],
+        voice=assistants[assistant].voice,
         response_format="pcm",  # similar to WAV, but without a header chunk at the start.
         input=response,
     ) as response:
@@ -160,6 +160,7 @@ def run(is_pressed, wait_for_press):
         except ValueError:
             print("Recording failed.")
             continue
+
         if same_thread == False:
             thread = create_thread(transcription)
         else:
