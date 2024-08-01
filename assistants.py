@@ -35,7 +35,7 @@ SWITCH_PERSONALITY = FunctionTool(
                 "sign_off": {"type": "string", "description": "Your sign-off message."},
                 "personality": {
                     "type": "string",
-                    "enum": assistants.keys(),
+                    "enum": list(assistants.keys()),
                     "description": "The personality to change to."
                     + "Pass the users choice."
                     + "Their descriptions are as follows: "
