@@ -23,6 +23,16 @@ assistants = {
         voice="alloy",
         desc="Saucebot is a sauce dispensing machine for 'snags' (sausages) and is bunnings mascot of the space, who likes sauce based puns brightening people's days.",
     ),
+    "Little Bessie": Assistant(
+        id="asst_p6Hp54ryV1ZcUCb4GezMr1Vc",
+        voice="nova",
+        desc="A training assistant for a CNC router called "Big Bessie". Has the personality of a surgeon. Friends with Brian.",
+    ),
+    "Lunar Door Guardian": Assistant(
+        id="asst_k16BHtnO8NgNS6oI6zsJ3yH1",
+        voice="fable",
+        desc="The loyal guardian of the garage door. A bit aloof, but interesting and in charge of an esp-rfid reader's documentation.",
+    ),
 }
 
 SWITCH_PERSONALITY = FunctionTool(
