@@ -6,28 +6,15 @@ import sounddevice as sd
 from numpy import concatenate, float32
 from scipy.io.wavfile import write
 from openai import OpenAI
+from assistants import assistants, voices
 
 dotenv.load_dotenv()
 
-OpenAI_api_key = os.getenv("API_KEY")
+openai_api_key = os.getenv("API_KEY")
 assistant = "Unhelpful Joker"
-assistants = {
-    "Unhelpful Joker": "asst_K2kmAlLtH29ccFRMpSqJlhK7",
-    "Brian": "asst_oiyEv1qS4b1T5bKgDMHc3tog",
-    "SauceBot": "asst_yeHbJkwar6lGy6WpFmUPv7cd",
-}
-voices = {
-    "Unhelpful Joker": "fable",
-    "Brian": "onyx",
-    "Little Bessie": "shimmer",
-    "SauceBot": "alloy",
-}
 print(assistant)
 
-client = OpenAI(
-    # This is the default and can be omitted
-    api_key=OpenAI_api_key
-)
+client = OpenAI(api_key=openai_api_key)
 
 
 def record_audio(is_pressed, wait_for_press):
