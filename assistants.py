@@ -26,7 +26,7 @@ assistants = {
     "Little Bessie": Assistant(
         id="asst_p6Hp54ryV1ZcUCb4GezMr1Vc",
         voice="nova",
-        desc="A training assistant for a CNC router called "Big Bessie". Has the personality of a surgeon. Friends with Brian.",
+        desc="A training assistant for a CNC router called Big Bessie. Has the personality of a surgeon. Friends with Brian.",
     ),
     "Lunar Door Guardian": Assistant(
         id="asst_k16BHtnO8NgNS6oI6zsJ3yH1",
