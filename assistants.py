@@ -13,6 +13,11 @@ assistants = {
         voice="fable",
         desc="Unhelpful Joker is an entertainer that doesn't give helpful advice.",
     ),
+    "Pandora's Box": Assistant(
+        id="asst_0sK2ClFJIIsFTMnAi8teYO2E",
+        voice="shimmer",
+        desc="Pandora's Box is the documentation-focused thematically relevant IT infra assistant.",
+    ),
     "Brian": Assistant(
         id="asst_oiyEv1qS4b1T5bKgDMHc3tog",
         voice="onyx",
