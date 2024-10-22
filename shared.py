@@ -11,13 +11,13 @@ from assistants import assistants
 dotenv.load_dotenv()
 
 openai_api_key = os.getenv("API_KEY")
-assistant = "Unhelpful Joker"
+assistant = "Brian"
 print(assistant)
 
 client = OpenAI(api_key=openai_api_key)
 
 
-def record_audio(is_pressed, wait_for_press):
+def record_audio(is_pressed, wait_for_press, leds=None, led_update=None):
     # Sampling frequency
     fs = 16000  # Hz
     # init list to store all audio data
@@ -35,6 +35,9 @@ def record_audio(is_pressed, wait_for_press):
 
     print("\nReady, press and hold to record...")
     wait_for_press()
+    
+    if led_update != None:
+        led_update(leds[0],'on')
 
     try:
         with sd.InputStream(
@@ -56,16 +59,28 @@ def record_audio(is_pressed, wait_for_press):
 
         print(f"Recording saved as {filename}")
         write(filename, 16000, audio_data)
+        
+        if led_update != None:
+            led_update(leds[0],'on')
+            led_update(leds[1],'blink')
+        
         return filename
 
 
-def transcribe_on_press(is_pressed, wait_for_press):
-    filename = record_audio(is_pressed, wait_for_press)
+def transcribe_on_press(is_pressed, wait_for_press, leds=None, led_update=None):
+    filename = record_audio(is_pressed, wait_for_press, leds, led_update)
+    
     audio_file = open(filename, "rb")
+    
     transcription = client.audio.transcriptions.create(
         model="whisper-1", language="en", file=audio_file
     )
     print("\nTranscription of me: ", transcription.text)
+    
+    if led_update != None:
+        led_update(leds[1],'on')
+        led_update(leds[2],'blink')
+    
     return transcription
 
 
@@ -75,7 +90,7 @@ def create_thread(transcription):
     return thread
 
 
-def run_thread(thread):
+def run_thread(thread, leds=None, led_update=None):
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
         assistant_id=assistants[assistant].id,
@@ -84,6 +99,7 @@ def run_thread(thread):
     cont = True
     rtn = ""
     personality = assistant
+    
     if run.status == "completed":
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         response = messages.data[0].content[0].text.value
@@ -126,15 +142,18 @@ def message_thread(thread, transcription):
         print("\nMessage failed:", e)
 
 
-def speak(response):
+def speak(response, leds=None, led_update=None):
     import pyaudio
 
     player_stream = pyaudio.PyAudio().open(
         format=pyaudio.paInt16, channels=1, rate=24000, output=True
     )
+    
+    if led_update != None:
+        led_update(leds[2],'on')
 
     start_time = time.time()
-
+    
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
         voice=assistants[assistant].voice,
@@ -144,19 +163,28 @@ def speak(response):
         print(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
         for chunk in response.iter_bytes(chunk_size=1024):
             player_stream.write(chunk)
+            
+    if led_update != None:
+        led_update(leds[0],'blink')
+        led_update(leds[1],'off')
+        led_update(leds[2],'off')
 
     print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
 
 
-def run(is_pressed, wait_for_press):
+def run(is_pressed, wait_for_press, leds=None, led_update=None):
     global assistant
+    
+    if led_update != None:
+        led_update(leds[0],'blink')
+    
     # create flag to track the status of the user interaction
     topic_running = True
     same_thread = False
 
     while topic_running == True:
         try:
-            transcription = transcribe_on_press(is_pressed, wait_for_press)
+            transcription = transcribe_on_press(is_pressed, wait_for_press, leds, led_update)
         except ValueError:
             print("Recording failed.")
             continue
@@ -167,6 +195,6 @@ def run(is_pressed, wait_for_press):
             message_to_thread = message_thread(thread, transcription)
 
         response, same_thread, personality = run_thread(thread)
-        speak(response)
+        speak(response, leds, led_update)
         # has to be after, otherwise will speak sign-off in wrong voice
         assistant = personality
