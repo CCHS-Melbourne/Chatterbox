@@ -133,13 +133,13 @@ def run_thread(thread, leds=None, led_update=None):
 
 def message_thread(thread, transcription):
     try:
-        message_to_thread = client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content=transcription.text
-        )
+        client.beta.threads.messages.create(
+            thread_id=thread.id, role="user", content=transcription.text)
         print("\nMessage sent.")
     except Exception as e:
-        raise e
         print("\nMessage failed:", e)
+        raise e
+        
 
 
 def speak(response, leds=None, led_update=None):
