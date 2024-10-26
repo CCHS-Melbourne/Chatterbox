@@ -1,19 +1,14 @@
 [Unit]
-#Description=Run my script after PulseAudio starts
-After=multi-user.target
-Requires=sound.target
+#Description=ChatterBox service to Run on Startup.
 
 [Service]
 Type=simple
-Environment="HOME=/home/chatter1"
+Environment="USER=chatter2"
+Environment="HOME=/home/chatter2"
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
 Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"
-User=chatter1
-Group=gpio
-ExecStart=/home/chatter1/Chatterbox/venv/bin/python /home/chatter1/Chatterbox/pizero.py --serve-in-foreground
-#StandardOutput=file:/var/log/start_pizero.log
-#StandardError=file:/var/log/start_pizero_error.log
+ExecStart="/home/chatter2/Chatterbox/start.sh"
 Restart=no
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
