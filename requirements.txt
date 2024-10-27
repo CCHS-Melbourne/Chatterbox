@@ -3,8 +3,6 @@ keyboard==0.13.5
 numpy==2.0.0
 openai==1.35.14
 paho_mqtt==2.1.0
-pedalboard==0.9.10
-pygame==2.6.0
 python-dotenv==1.0.1
 scipy==1.14.0
 sounddevice==0.4.7
