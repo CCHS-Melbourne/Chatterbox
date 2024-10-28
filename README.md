@@ -21,10 +21,16 @@ An OpenAI account and subsquent API key is required.
 Save your API details into the .env file
 
 
+
 ## Code:
 This code needs to be cloned and put on the Raspberry Pi Zero Two W.
 You will need to then install the required libraries with the following command:
 ```
+sudo apt install libasound2-dev
+sudo apt-get install libportaudio2
+sudo apt-get install libatlas-base-dev
+sudo apt-get install libopenblas-dev
+
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
