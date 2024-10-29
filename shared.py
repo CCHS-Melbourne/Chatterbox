@@ -146,7 +146,7 @@ def speak(response, leds=None, led_update=None):
     import pyaudio
 
     player_stream = pyaudio.PyAudio().open(
-        format=pyaudio.paInt16, channels=1, rate=24000, output=True
+        format=pyaudio.paInt16, channels=1, rate=24000, output=True, frames_per_buffer=5000
     )
     
     if led_update != None:
