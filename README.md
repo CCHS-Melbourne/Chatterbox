@@ -28,19 +28,23 @@ you need to add:
 dtoverlay=googlevoicehat-soundcard
 ````
 
+
 ## Code:
 This code needs to be cloned and put on the Raspberry Pi Zero Two W.
 You will need to then install the required libraries with the following command:
 
 
 ```
-sudo apt-get update
-sudo apt-get pulseaudio
-sudo apt-get portaudio19-dev
-sudo apt-get python3-dev
+sudo apt install libasound2-dev
+sudo apt install libportaudio2
+sudo apt update
+sudo apt pulseaudio
+sudo apt portaudio19-dev
+sudo apt python3-dev
 
-sudo apt-get install git
+sudo apt install git
 git clone https://github.com/CCHS-Melbourne/Chatterbox.git
+
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
