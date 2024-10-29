@@ -1,6 +1,6 @@
-rpi.gpio
 gpiozero
 lgpio
+pyaudio
 keyboard==0.13.5
 numpy
 openai==1.35.14
