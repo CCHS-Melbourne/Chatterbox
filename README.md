@@ -56,6 +56,7 @@ The chatter.service file is a systemd service file that will start the chatterbo
 You will first need to make the chatter.service file executable with the following command:
 ```
 chmod +x chatter.service
+chmod +x start.sh
 ```
 
 To have it auto-start on boot, you need to add the chatter.service to the /etc/systemd/user directory.
