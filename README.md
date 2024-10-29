@@ -20,18 +20,41 @@ Use the Raspberry Pi Imager to load the OS onto the Raspberry Pi Zero Two W.
 An OpenAI account and subsquent API key is required.
 Save your API details into the .env file
 
+# PI Setup
+First you need to modify the /boot/firmaware/config.txt file to enable the I2S audio and the I2C bus. 
+You need to uncomment dtparam=i2s=on and dtparam=i2c_arm=on
+you need to add: 
+````
+dtoverlay=googlevoicehat-soundcard
+````
 
 ## Code:
 This code needs to be cloned and put on the Raspberry Pi Zero Two W.
 You will need to then install the required libraries with the following command:
+
+
 ```
+sudo apt-get update
+sudo apt-get pulseaudio
+sudo apt-get portaudio19-dev
+sudo apt-get python3-dev
+
+sudo apt-get install git
+git clone https://github.com/CCHS-Melbourne/Chatterbox.git
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ## Setup for auto-starting on boot: 
-To have it auto-start on boot, you need to add teh chatter.service to the /etc/systemd/user directory.
+The chatter.service file is a systemd service file that will start the chatterbox on boot.
+
+You will first need to make the chatter.service file executable with the following command:
+```
+chmod +x chatter.service
+```
+
+To have it auto-start on boot, you need to add the chatter.service to the /etc/systemd/user directory.
 
 If your user for the pi is not chatter2 you will need to modify the following lines int eh chatter.service file:
 Environment="USER=chatter2"         # the user you want to run the service as
