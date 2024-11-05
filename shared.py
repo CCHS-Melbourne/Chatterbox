@@ -75,13 +75,15 @@ def transcribe_on_press(is_pressed, wait_for_press, leds=None, led_update=None):
     transcription = client.audio.transcriptions.create(
         model="whisper-1", language="en", file=audio_file
     )
-    print("\nTranscription of me: ", transcription.text)
+    print('transcription type: ',type(transcription))
+    print('transcription object: ',transcription)
+    #print("\nTranscription of me: ", transcription.text)
     
     if led_update != None:
         led_update(leds[1],'on')
         led_update(leds[2],'blink')
     
-    return transcription
+    return transcription.text
 
 
 def create_thread(transcription):
@@ -130,17 +132,14 @@ def run_thread(thread, leds=None, led_update=None):
         print("Status:", run.status)
     return rtn, cont, personality
 
-
 def message_thread(thread, transcription):
     try:
         client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content=transcription.text)
+            thread_id=thread.id, role="user", content=transcription)
         print("\nMessage sent.")
     except Exception as e:
         print("\nMessage failed:", e)
         raise e
-        
-
 
 def speak(response, leds=None, led_update=None):
     import pyaudio
@@ -183,17 +182,19 @@ def run(is_pressed, wait_for_press, leds=None, led_update=None):
     same_thread = False
 
     while topic_running == True:
-        try:
-            transcription = transcribe_on_press(is_pressed, wait_for_press, leds, led_update)
-        except ValueError:
-            print("Recording failed.")
-            continue
-
         if same_thread == False:
-            thread = create_thread(transcription)
+            led_update(leds[0],'blink')
+            led_update(leds[1],'blink')
+            led_update(leds[2],'blink')
+            thread = create_thread("Thread starting, please say hello so the user knows who you are.")
         else:
+            try:
+                transcription = transcribe_on_press(is_pressed, wait_for_press, leds, led_update)
+            except ValueError:
+                print("Recording failed.")
+                continue
             message_to_thread = message_thread(thread, transcription)
-
+        
         response, same_thread, personality = run_thread(thread)
         speak(response, leds, led_update)
         # has to be after, otherwise will speak sign-off in wrong voice
