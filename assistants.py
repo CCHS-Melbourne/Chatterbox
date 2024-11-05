@@ -36,28 +36,28 @@ assistants = {
     "Lunar Door Guardian": Assistant(
         id="asst_k16BHtnO8NgNS6oI6zsJ3yH1",
         voice="echo",
-        desc="The loyal guardian of the garage door. A bit aloof, but interesting and in charge of an esp-rfid reader's documentation.",
+        desc="The loyal guardian of the garage door. A bit aloof, but interesting and in charge of an ESP-RFID reader's documentation.",
     ),
 }
 
-SWITCH_PERSONALITY = FunctionTool(
+SWITCH_ASSISTANT = FunctionTool(
     function=FunctionDefinition(
-        name="switch_personality",
-        description="Switch to a different chatterbot personality",
+        name="switch_assistant",
+        description="Switch to a different chatterbot assistant",
         parameters={
             "type": "object",
             "properties": {
                 "sign_off": {"type": "string", "description": "Your sign-off message."},
-                "personality": {
+                "assistant": {
                     "type": "string",
                     "enum": list(assistants.keys()),
-                    "description": "The personality to change to."
+                    "description": "The assistant to change to."
                     + "Pass the users choice."
                     + "Their descriptions are as follows: "
                     + " ".join("- " + x.desc for x in assistants.values()),
                 },
             },
-            "required": ["sign_off", "personality"],
+            "required": ["sign_off", "assistant"],
         },
     ),
     type="function",
@@ -67,7 +67,7 @@ SWITCH_PERSONALITY = FunctionTool(
 def update_tools(client):
     for assistant in assistants.values():
         updated_assistant = client.beta.assistants.update(
-            assistant.id, tools=[SWITCH_PERSONALITY], model="gpt-4o-mini"
+            assistant.id, tools=[SWITCH_ASSISTANT], model="gpt-4o-mini"
         )
 
 
