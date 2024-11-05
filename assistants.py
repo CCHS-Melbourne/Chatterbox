@@ -64,12 +64,26 @@ SWITCH_ASSISTANT = FunctionTool(
 )
 
 
+MAKE_LOG = FunctionTool(
+    function=FunctionDefinition(
+        name="make_log",
+        description="Summarise the conversation for your personal assistant records. Keep the timestamp. Please add the details you think are relevant that you'd like to know in the future.",
+        parameters={
+            "type": "object",
+            "properties": {
+                "assistants_log": {"type": "string", "description": "Your log to add to your log file."},
+            },
+            "required": ["made_log"],
+        },
+    ),
+    type="function",
+)
+
 def update_tools(client):
     for assistant in assistants.values():
         updated_assistant = client.beta.assistants.update(
-            assistant.id, tools=[SWITCH_ASSISTANT], model="gpt-4o-mini"
+            assistant.id, tools=[SWITCH_ASSISTANT,MAKE_LOG], model="gpt-4o-mini"
         )
-
 
 def main():
     dotenv.load_dotenv()
@@ -77,7 +91,6 @@ def main():
     client = OpenAI(api_key=openai_api_key)
 
     update_tools(client)
-
 
 if __name__ == "__main__":
     main()
