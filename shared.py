@@ -75,9 +75,9 @@ def transcribe_on_press(is_pressed, wait_for_press, leds=None, led_update=None):
     transcription = client.audio.transcriptions.create(
         model="whisper-1", language="en", file=audio_file
     )
-    print('transcription type: ',type(transcription))
-    print('transcription object: ',transcription)
-    #print("\nTranscription of me: ", transcription.text)
+    #print('transcription type: ',type(transcription))
+    #print('transcription object: ',transcription)
+    print("\nTranscription of me: ", transcription.text)
     
     if led_update != None:
         led_update(leds[1],'on')
@@ -118,6 +118,18 @@ def run_thread(thread, leds=None, led_update=None):
                 rtn = args["sign_off"]
                 cont = False
                 tool_outputs.append({"tool_call_id": tool.id, "output": "Bye!"})
+                
+            if tool.function.name == "make_log":
+                args = json.loads(tool.function.arguments)
+                print(args)
+                rtn=args["assistants_log"]
+                tool_outputs.append({"tool_call_id": tool.id, "output": "Thank you for making a log."})
+#                 print("Assitant made following log:", args["assistants_log"])
+#                 print("Writing to file.")
+#                 print("Writen to file.")
+#                 print("Uploading to Assistant.")
+                pass
+            
         if tool_outputs:
             try:
                 run = client.beta.threads.runs.submit_tool_outputs_and_poll(
