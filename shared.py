@@ -7,6 +7,7 @@ from numpy import concatenate, float32
 from scipy.io.wavfile import write
 from openai import OpenAI
 from assistants import assistants
+from io import BytesIO
 
 dotenv.load_dotenv()
 
@@ -55,28 +56,25 @@ def record_audio(is_pressed, wait_for_press, leds=None, led_update=None):
         print(f"An error occurred: {e}")
     finally:
         audio_data = concatenate(buffer)
-        filename = "output.wav"
-
-        print(f"Recording saved as {filename}")
-        write(filename, 16000, audio_data)
+        
+        wav_file = BytesIO()
+        wav_file.name = "audio.wav" #for some dumb reason, the file name is needed for the api to determine the file type
+        write(wav_file, fs, audio_data)
         
         if led_update != None:
             led_update(leds[0],'on')
             led_update(leds[1],'blink')
         
-        return filename
+        return wav_file
 
 
 def transcribe_on_press(is_pressed, wait_for_press, leds=None, led_update=None):
-    filename = record_audio(is_pressed, wait_for_press, leds, led_update)
-    
-    audio_file = open(filename, "rb")
+    audio_wav_file = record_audio(is_pressed, wait_for_press, leds, led_update)
     
     transcription = client.audio.transcriptions.create(
-        model="whisper-1", language="en", file=audio_file
+        model="whisper-1", language="en", file=audio_wav_file
     )
-    #print('transcription type: ',type(transcription))
-    #print('transcription object: ',transcription)
+
     print("\nTranscription of me: ", transcription.text)
     
     if led_update != None:
