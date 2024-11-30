@@ -101,32 +101,38 @@ def run_thread(thread, leds=None, led_update=None):
     personality = assistant
     
     if run.status == "completed":
+        print("Run completed.")
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         response = messages.data[0].content[0].text.value
         print("\nResponse: ", response)
-        rtn = response
+        rtn = response        
+    
     elif run.status == "requires_action":
+        print("Run rquires action.")
         tool_outputs = []
+        
+        
         for tool in run.required_action.submit_tool_outputs.tool_calls:
-            if tool.function.name == "switch_personality":
+            print(tool)
+            if tool.function.name == "switch_assistant":
                 args = json.loads(tool.function.arguments)
                 print("Sign off with", args["sign_off"])
-                print("Switch to", args["personality"])
-                personality = args["personality"]
+                print("Switch to", args["assistant"])
+                personality = args["assistant"]
                 rtn = args["sign_off"]
                 cont = False
                 tool_outputs.append({"tool_call_id": tool.id, "output": "Bye!"})
                 
-            if tool.function.name == "make_log":
-                args = json.loads(tool.function.arguments)
-                print(args)
-                rtn=args["assistants_log"]
-                tool_outputs.append({"tool_call_id": tool.id, "output": "Thank you for making a log."})
-#                 print("Assitant made following log:", args["assistants_log"])
-#                 print("Writing to file.")
-#                 print("Writen to file.")
-#                 print("Uploading to Assistant.")
-                pass
+    #             if tool.function.name == "make_log":
+    #                 args = json.loads(tool.function.arguments)
+    #                 print(args)
+    #                 rtn=args["assistants_log"]
+    #                 tool_outputs.append({"tool_call_id": tool.id, "output": "Thank you for making a log."})
+    #                 print("Assitant made following log:", args["assistants_log"])
+    #                 print("Writing to file.")
+    #                 print("Writen to file.")
+    #                 print("Uploading to Assistant.")
+        print("tool outputs:", tool_outputs)
             
         if tool_outputs:
             try:
@@ -136,10 +142,17 @@ def run_thread(thread, leds=None, led_update=None):
                 print("Tool outputs submitted successfully.")
             except Exception as e:
                 print("Failed to submit tool outputs:", e)
+            else:
+                print("No tool outputs to submit.")
         else:
-            print("No tool outputs to submit.")
+            print("Status:", run.status)
+    
     else:
         print("Status:", run.status)
+        
+    #print("rtn:",rtn)
+    print("continue?",cont)
+    print("speak with:",personality)
     return rtn, cont, personality
 
 def message_thread(thread, transcription):
