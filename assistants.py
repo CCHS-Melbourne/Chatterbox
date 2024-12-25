@@ -71,7 +71,10 @@ MAKE_LOG = FunctionTool(
         parameters={
             "type": "object",
             "properties": {
-                "assistants_log": {"type": "string", "description": "Your log to add to your log file."},
+                "assistants_log": {
+                    "type": "string",
+                    "description": "Your log to add to your log file.",
+                },
             },
             "required": ["made_log"],
         },
@@ -79,11 +82,13 @@ MAKE_LOG = FunctionTool(
     type="function",
 )
 
+
 def update_tools(client):
     for assistant in assistants.values():
         updated_assistant = client.beta.assistants.update(
-            assistant.id, tools=[SWITCH_ASSISTANT,MAKE_LOG], model="gpt-4o-mini"
+            assistant.id, tools=[SWITCH_ASSISTANT, MAKE_LOG], model="gpt-4o-mini"
         )
+
 
 def main():
     dotenv.load_dotenv()
@@ -91,6 +96,7 @@ def main():
     client = OpenAI(api_key=openai_api_key)
 
     update_tools(client)
+
 
 if __name__ == "__main__":
     main()
