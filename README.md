@@ -1,5 +1,8 @@
 # Chatterbox 
 
+## Hardware:
+[https://github.com/PancakeLegend/ChatterBox](https://github.com/PancakeLegend/ChatterBox)
+
 ## Aim:
 
 A project to connect Push-to-talk OpenAI assistants with access to manuals for equipment like 3d-printers in order to make it easier and funner for new users to learn to use said equipment. Bonus addition of voice effects to differentiate the voices a bit from stock open-AI voices. 
