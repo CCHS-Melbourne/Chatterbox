@@ -1,14 +1,15 @@
 [Unit]
 #Description=ChatterBox service to Run on Startup.
+Description=chatter
 
 [Service]
-Type=simple
-Environment="USER=chatter2"
-Environment="HOME=/home/chatter2"
+#Type=simple
+Environment="USER=chatter3"
+Environment="HOME=/home/chatter3"
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
 Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"
-ExecStart="/home/chatter2/Chatterbox/start.sh"
-Restart=no
+ExecStart=/home/chatter3/Chatterbox/venv/bin/python /home/chatter3/Chatterbox/pizero.py
+
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

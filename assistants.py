@@ -38,6 +38,12 @@ assistants = {
         voice="echo",
         desc="The loyal guardian of the garage door. A bit aloof, but interesting and in charge of an ESP-RFID reader's documentation.",
     ),
+    "Zeller the Smeller": Assistant(
+        id="asst_GXGz70mxrywgTLTzuWNTqkxJ",
+        voice="onyx",
+        desc="An archtypal, mystic stoner that spends a lot of time at the snack bar, man.",
+    )
+
 }
 
 SWITCH_ASSISTANT = FunctionTool(
