@@ -12,7 +12,8 @@ It is assumed that you are comfortable with soldering, hooking together breakout
 ## Hardware:
 The hardward used to build this project may be found here: [PancakeLegend/ChatterBox](https://github.com/PancakeLegend/ChatterBox), modified top plate and housing can be found in branch here: [GoatNote/ChatterBox](https://github.com/GoatNote/ChatterBox-1)
 
-![Raspberry Pi Zero Two W with a hat containing a DAC amp, a 3W speaker, and an I2S MEMS Microphone V1.0](Chatterbox/images/chatterbox0.jpg)
+![Raspberry Pi Zero Two W with a hat containing a DAC amp, a 3W speaker, and an I2S MEMS Microphone V1.0]([Chatterbox/images](https://github.com/CCHS-Melbourne/Chatterbox/tree/main/images/chatterbox0.png)
+
 
 ## To use:
 Use the Raspberry Pi Imager to load the OS onto the Raspberry Pi Zero Two W.
