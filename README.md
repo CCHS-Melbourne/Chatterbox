@@ -10,7 +10,9 @@ This is similar to the chatbot designed by [pdp12](https://www.instructables.com
 It is assumed that you are comfortable with soldering, hooking together breakout dev boards for chips, using a raspberry Pi OS and/or SSH and python programming.
 
 ## Hardware:
-![image of a Raspberry Pi Zero Two W with many rainbow ribbon innie-to-innie cables connecting a computer key switch, a DAC amp, a 3W speaker, and an I2S MEMS Microphone V1.0](PXL_20241026_100359807.MP.jpg)
+The hardward used to build this project may be found here: [PancakeLegend/ChatterBox](https://github.com/PancakeLegend/ChatterBox), modified top plate and housing can be found in branch here: [GoatNote/ChatterBox](https://github.com/GoatNote/ChatterBox-1)
+
+![Raspberry Pi Zero Two W with a hat containing a DAC amp, a 3W speaker, and an I2S MEMS Microphone V1.0](.jpg)
 
 ## To use:
 Use the Raspberry Pi Imager to load the OS onto the Raspberry Pi Zero Two W.
