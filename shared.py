@@ -12,8 +12,8 @@ from io import BytesIO
 dotenv.load_dotenv()
 
 openai_api_key = os.getenv("API_KEY")
-assistant = "Brian"
-print(assistant)
+#assistant = "Brian"
+#print(assistant)
 
 client = OpenAI(api_key=openai_api_key)
 
@@ -90,15 +90,15 @@ def create_thread(transcription):
     return thread
 
 
-def run_thread(thread, leds=None, led_update=None):
+def run_thread(thread, assistant, leds=None, led_update=None):
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
-        assistant_id=assistants[assistant].id,
+        assistant_id=assistant.id,#assistants[assistant].id,
         instructions="",  # Working system prompt thing
     )
     cont = True
     rtn = ""
-    personality = assistant
+    #personality = assistant
 
     if run.status == "completed":
         print("Run completed.")
@@ -106,21 +106,21 @@ def run_thread(thread, leds=None, led_update=None):
         response = messages.data[0].content[0].text.value
         print("\nResponse: ", response)
         rtn = response
+# 
+#     elif run.status == "requires_action":
+#         print("Run rquires action.")
+#         tool_outputs = []
 
-    elif run.status == "requires_action":
-        print("Run rquires action.")
-        tool_outputs = []
-
-        for tool in run.required_action.submit_tool_outputs.tool_calls:
-            print(tool)
-            if tool.function.name == "switch_assistant":
-                args = json.loads(tool.function.arguments)
-                print("Sign off with", args["sign_off"])
-                print("Switch to", args["assistant"])
-                personality = args["assistant"]
-                rtn = args["sign_off"]
-                cont = False
-                tool_outputs.append({"tool_call_id": tool.id, "output": "Bye!"})
+#         for tool in run.required_action.submit_tool_outputs.tool_calls:
+#             print(tool)
+#             if tool.function.name == "switch_assistant":
+#                 args = json.loads(tool.function.arguments)
+#                 print("Sign off with", args["sign_off"])
+#                 print("Switch to", args["assistant"])
+#                 personality = args["assistant"]
+#                 rtn = args["sign_off"]
+#                 cont = False
+#                 tool_outputs.append({"tool_call_id": tool.id, "output": "Bye!"})
 
         #             if tool.function.name == "make_log":
         #                 args = json.loads(tool.function.arguments)
@@ -131,28 +131,28 @@ def run_thread(thread, leds=None, led_update=None):
         #                 print("Writing to file.")
         #                 print("Writen to file.")
         #                 print("Uploading to Assistant.")
-        print("tool outputs:", tool_outputs)
-
-        if tool_outputs:
-            try:
-                run = client.beta.threads.runs.submit_tool_outputs_and_poll(
-                    thread_id=thread.id, run_id=run.id, tool_outputs=tool_outputs
-                )
-                print("Tool outputs submitted successfully.")
-            except Exception as e:
-                print("Failed to submit tool outputs:", e)
-            else:
-                print("No tool outputs to submit.")
-        else:
-            print("Status:", run.status)
+#         print("tool outputs:", tool_outputs)
+# 
+#         if tool_outputs:
+#             try:
+#                 run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+#                     thread_id=thread.id, run_id=run.id, tool_outputs=tool_outputs
+#                 )
+#                 print("Tool outputs submitted successfully.")
+#             except Exception as e:
+#                 print("Failed to submit tool outputs:", e)
+#             else:
+#                 print("No tool outputs to submit.")
+#         else:
+#             print("Status:", run.status)
 
     else:
         print("Status:", run.status)
 
     # print("rtn:",rtn)
     print("continue?", cont)
-    print("speak with:", personality)
-    return rtn, cont, personality
+    #print("speak with:", personality)
+    return rtn, cont#, personality
 
 
 def message_thread(thread, transcription):
@@ -184,7 +184,7 @@ def speak(response, leds=None, led_update=None):
 
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
-        voice=assistants[assistant].voice,
+        voice="fable",#assistants[assistant].voice,
         response_format="pcm",  # similar to WAV, but without a header chunk at the start.
         input=response,
     ) as response:
@@ -209,7 +209,13 @@ def run(is_pressed, wait_for_press, leds=None, led_update=None):
     # create flag to track the status of the user interaction
     topic_running = True
     same_thread = False
-
+    
+    assistant = client.beta.assistants.create(
+        name="Temporary Assistant",
+        model="gpt-4o",
+        instructions="Be helpful and concise.",
+    )
+    
     while topic_running == True:
         if same_thread == False:
             if led_update != None:
@@ -229,7 +235,9 @@ def run(is_pressed, wait_for_press, leds=None, led_update=None):
                 continue
             message_to_thread = message_thread(thread, transcription)
 
-        response, same_thread, personality = run_thread(thread)
+        response, same_thread = run_thread(thread,assistant)
         speak(response, leds, led_update)
         # has to be after, otherwise will speak sign-off in wrong voice
-        assistant = personality
+        #assistant = personality
+        
+    client.beta.assistants.delete(assistant_id)
