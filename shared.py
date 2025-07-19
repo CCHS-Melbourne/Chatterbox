@@ -3,6 +3,7 @@ import dotenv
 import os
 import json
 import sounddevice as sd
+import pyaudio
 from numpy import concatenate, float32
 from scipy.io.wavfile import write
 from openai import OpenAI
@@ -167,7 +168,7 @@ def message_thread(thread, transcription):
 
 
 def speak(response, leds=None, led_update=None):
-    import pyaudio
+    
 
     player_stream = pyaudio.PyAudio().open(
         format=pyaudio.paInt16,
@@ -198,6 +199,9 @@ def speak(response, leds=None, led_update=None):
         led_update(leds[2], "off")
 
     print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
+    # Close stream when done	
+    player_stream.stop_stream()
+    player_stream.close()
 
 
 def run(is_pressed, wait_for_press, leds=None, led_update=None):
